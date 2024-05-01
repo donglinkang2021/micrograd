@@ -1,0 +1,1 @@
+dot -T png example.dot -o example.png
