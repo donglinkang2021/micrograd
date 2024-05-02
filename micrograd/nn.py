@@ -50,6 +50,14 @@ class ReLU(Module):
     def __repr__(self) -> str:
         return "ReLU"
     
+class Tanh(Module):
+
+    def forward(self, x:List[Value]) -> List[Value]:
+        return [xi.tanh() for xi in x]
+
+    def __repr__(self) -> str:
+        return "Tanh"
+    
 class MSELoss(Module):
 
     def forward(self, input:List[Value], target:List) -> Value:
@@ -59,3 +67,23 @@ class MSELoss(Module):
     def __repr__(self) -> str:
         return "MSELoss"
     
+class LogSoftmax(Module):
+
+    def forward(self, x:List[Value]) -> List[Value]:
+        logsumexp = sum(xi.exp() for xi in x).log()
+        return [xi - logsumexp for xi in x]
+
+    def __repr__(self) -> str:
+        return "LogSoftmax"
+    
+class CrossEntropyLoss(Module):
+
+    def __init__(self):
+        self.logsoftmax = LogSoftmax()
+
+    def forward(self, input:List[List[Value]], target:List[int]) -> Value:
+        assert len(input) == len(target)
+        return -sum(self.logsoftmax(yi)[ti] for yi,ti in zip(input, target)) / len(input)
+
+    def __repr__(self) -> str:
+        return "CrossEntropyLoss"
